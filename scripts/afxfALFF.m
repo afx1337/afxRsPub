@@ -44,6 +44,6 @@ function afxfALFF(y,brainMask,subjectMasks,denoisingOptions,dim,mat,outDir,subje
     [pth,~,~] = fileparts(imgFname);
     if ~exist(pth,'dir'), mkdir(pth); end
     % save fcunctional connectivity map
-    afxVolumeWrite(imgFname,fALFF,dim,'int16',mat,'fALFF z-scores')
+    afxVolumeWrite(imgFname,fALFF,dim,'int16',mat,'fALFF z-scores');
     fprintf('done\n')
 end

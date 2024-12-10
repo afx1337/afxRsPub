@@ -27,6 +27,6 @@ function afxConnVMHC(y,brainMask,dim,mat,outDir,subjectName)
     [pth,~,~] = fileparts(imgFname);
     if ~exist(pth,'dir'), mkdir(pth); end
     % save fcunctional connectivity map
-    afxVolumeWrite(imgFname,z,dim,'int16',mat,'vmhc: fisher transformed corrcoeff')
+    afxVolumeWrite(imgFname,z,dim,'int16',mat,'vmhc: fisher transformed corrcoeff');
     fprintf('done\n')
 end

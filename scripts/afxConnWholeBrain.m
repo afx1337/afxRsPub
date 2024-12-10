@@ -48,7 +48,7 @@ function afxConnWholeBrain(y,yRoi,brainMask,rois,dim,mat,outDir,subjectName)
         [pth,~,~] = fileparts(imgFname);
         if ~exist(pth,'dir'), mkdir(pth); end
         % save fucnctional connectivity map
-        afxVolumeWrite(imgFname,z2,dim,'int16',mat,'fisher transformed corrcoeff')
+        afxVolumeWrite(imgFname,z2,dim,'int16',mat,'fisher transformed corrcoeff');
         fprintf('done\n')
     end
 end

@@ -95,7 +95,7 @@ function afxConnHemodynamicLag(y,y2,brainMask,subjectMasks,rpFile,options,dim,ma
     [pth,~,~] = fileparts(imgFname);
     if ~exist(pth,'dir'), mkdir(pth); end
     % save lag map
-    afxVolumeWrite(imgFname,lag,dim,'int16',mat,'hemodynamic lag in s')
+    afxVolumeWrite(imgFname,lag,dim,'int16',mat,'hemodynamic lag in s');
 
     % write to file
     fnameOutTxt = fullfile(outDir,'hemo_lag.txt');
