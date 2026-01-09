@@ -29,11 +29,10 @@ function afxConnWholeBrain(y,yRoi,brainMask,rois,dim,mat,outDir,subjectName)
         parfor i = 1:size(y,2)
             % a = a - mean(a); b = b - mean(b)
             % rho = a*b / ( norm(a)*norm(b) )
-            % note, that mean centering was done before for roi timeseries and
-            % is not necessary for voxel timeseries due to highpass filtering
-            % roi timeseries is already normed
+            % note, that mean centering and norming was done above
             z(i) =  y2 * y(:,i);
         end
+        
         % fisher transformation
         z(z > 1-1e-15) = 1-1e-15; % to prevent this: atanh(1) = Inf
         z = atanh(z);
@@ -47,6 +46,7 @@ function afxConnWholeBrain(y,yRoi,brainMask,rois,dim,mat,outDir,subjectName)
         imgFname = fullfile(outDir,['roi_' rois(iRoi).name],strcat(subjectName,'.nii'));
         [pth,~,~] = fileparts(imgFname);
         if ~exist(pth,'dir'), mkdir(pth); end
+        
         % save fucnctional connectivity map
         afxVolumeWrite(imgFname,z2,dim,'int16',mat,'fisher transformed corrcoeff');
         fprintf('done\n')

@@ -39,7 +39,7 @@ function rois = afxConn(func,masks,rpFile,denoisingOptions,rois,firstlevelDir,co
             case 'vmhc'
                 afxConnVMHC(y,brainMask,dim,mat,outDir,subjectName);
             case 'hemo_lag'
-                afxConnHemodynamicLag(y,y2,brainMask,subjectMasks,rpFile,denoisingOptions,dim,mat,outDir,subjectName);
+                afxConnHemodynamicLag(y,brainMask,subjectMasks,rpFile,denoisingOptions,dim,mat,outDir,subjectName);
             case 'fALFF'
                 afxfALFF(y,brainMask,subjectMasks,denoisingOptions,dim,mat,outDir,subjectName);
             case 'ALFF'

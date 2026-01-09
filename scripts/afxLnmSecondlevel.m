@@ -38,10 +38,12 @@ function [allMean,allMeanZ,allT] = afxLnmSecondlevel(firstlevelInfo,groups,delet
         afxLnmTTest(fil,fT,iCond);
         
         % create sections to allow reviewing individual lesion networks
-        f = afxPlotSections(fT,[40 20 0 -30],{},[tCrit Inf],[tCrit Inf],1,3);
-        set(f,'Position',[100 100 1500/2 360/2]);
-        print(f,fTPng,'-dpng','-r150');
-        close(f);
+        if ~exist(fTPng,'file')
+            f = afxPlotSections(fT,[40 20 0 -30],{},[tCrit Inf],[tCrit Inf],1,3);
+            set(f,'Position',[100 100 1500/2 360/2]);
+            print(f,fTPng,'-dpng','-r150');
+            close(f);
+        end
         
         allT{iRoi} = fT;
         allMean{iRoi} = fMean;

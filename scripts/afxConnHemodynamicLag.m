@@ -1,15 +1,12 @@
-function afxConnHemodynamicLag(y,y2,brainMask,subjectMasks,rpFile,options,dim,mat,outDir,subjectName)
+function afxConnHemodynamicLag(y,brainMask,subjectMasks,rpFile,options,dim,mat,outDir,subjectName)
     % calculation of hemodynamic lag
     % See Lv et al. (2012) and  Siegel et al. (2015)
     fprintf('   Calculating hemodynamic lag ...\n')
 
     % calculate global signal (from GM, see Siegel et al., 2015)
     indGSM = subjectMasks(:,1) > .95; %| subjectMasks(:,2)>options.threshWM;
-    if options.unsmoothed
-        gs(:,1) = mean(y2(:,indGSM).*repmat(subjectMasks(indGSM,2),1,size(y2,1))',2);
-    else
-        gs(:,1) = mean(y(:,indGSM).*repmat(subjectMasks(indGSM,2),1,size(y,1))',2);
-    end
+    gs(:,1) = mean(y(:,indGSM).*repmat(subjectMasks(indGSM,2),1,size(y,1))',2);
+    
     % mean centering of global signal
     gs(:,1) = gs(:,1) - mean(gs(:,1));
     

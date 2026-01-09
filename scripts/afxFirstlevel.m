@@ -42,7 +42,8 @@ function projectDir = afxFirstlevel(subjects,denoisingOptions,rois,projectName,a
     end
     
     % save project information
-    save(fullfile(projectDir,'firstlevel_info.mat'),'subjects','rois','denoisingOptions','projectName','firstlevelDir','analyses');
+    meta = afxMetaData();
+    save(fullfile(projectDir,'firstlevel_info.mat'),'subjects','rois','denoisingOptions','projectName','firstlevelDir','analyses','meta');
     
     if any(contains(analyses,'piniroi'))
         afxSecondlevelPiniROIs(fullfile(projectDir,'firstlevel_info.mat'))
