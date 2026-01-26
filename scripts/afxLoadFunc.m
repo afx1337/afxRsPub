@@ -1,5 +1,6 @@
 function [y,XYZmm,dim,mat] = afxLoadFunc(func, varargin)
-    % Load NIfTI images with optional caching and dynamic cutoff
+    % [y,XYZmm,dim,mat] = afxLoadFunc(filenames, varargin)
+    % Load NIfTI images in filenames (char array)
     %
     % Optional parameters:
     %   'precision' : 'single' (default) or 'logical'
