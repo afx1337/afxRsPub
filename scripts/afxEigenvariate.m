@@ -3,11 +3,11 @@ function Y = afxEigenvariate(y)
     % First eigenvariate, sign-aligned to ROI mean
     % y: [T x V]
 
-    % ROI mean (reference)
-    m = mean(y,2);
-
     % remove voxel-wise mean for PCA
     y = y - mean(y,1);
+
+    % ROI mean (reference)
+    m = mean(y,2);
 
     if size(y,2) > 230 && size(y,2) < 2000
         Y = afxEigenvariate_new(y);
