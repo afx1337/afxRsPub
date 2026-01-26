@@ -19,7 +19,7 @@ function rois = afxConn(func,masks,rpFile,denoisingOptions,rois,firstlevelDir,co
     
     % roi timeseries extraction
     if ~isempty(rois) && any(contains(analyses,{'fc_wholebrain','fc_network'}))
-        [yRoi, lesioned] = afxRoiTimeseries(rois,y,subjectMasks,brainMask,XYZmm,denoisingOptions);
+        [rois, lesioned, yRoi] = afxRoiTimeseries(rois,y,subjectMasks,brainMask,XYZmm,denoisingOptions);
     end
     
     % smoothing

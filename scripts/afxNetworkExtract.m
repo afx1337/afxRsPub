@@ -1,4 +1,4 @@
-function afxNetworkExtract(fNetwork,fImages)
+function out = afxNetworkExtract(fNetwork,fImages)
     if nargin < 1
         fNetwork = spm_select([1 1],'image','Select network');
     end
@@ -9,15 +9,16 @@ function afxNetworkExtract(fNetwork,fImages)
     u  = spm_input(['Hight threshold (0 for none)'],'+1','r',0,1);
     k  = spm_input(['Extend threshold (0 for none)'],'+1','r',0,1);
 
-    outVals = [];
-    %sizes = [];
-    outRoiNames = {};
+    out = struct([]);
   
     % load images
     Vi = spm_vol(char(fImages));
-    n = length(Vi);
-    parfor iRoi = 1:n
+    n = numel(Vi);
+    for iRoi = 1:n
         tmp = spm_read_vols(Vi(iRoi));
+        if iRoi == 1
+        	val = zeros(numel(Vi),numel(tmp));
+        end
         val(iRoi,:) = tmp(:);
     end
     outimageNames = {Vi.fname}';
@@ -29,7 +30,7 @@ function afxNetworkExtract(fNetwork,fImages)
     dat = afxVolumeResample(fNetwork,XYZmm,0)*pm;
     ind = find(dat > u);
     [X,Y,Z] = ind2sub(Vi.dim,ind);
-    XYZ = [X Y Z]';
+    XYZ = [X; Y; Z];
     Z = dat(ind);
     val = val(:,ind);
     clear dat X Y;
@@ -50,27 +51,10 @@ function afxNetworkExtract(fNetwork,fImages)
             ROIname = spm_input('VOI name [0 skips]','+1','s',[spm_str_manip(fNetwork,'rt') '_' num2str(iRoi)]);
 
             if ~strcmp(ROIname,'0')
-                outRoiNames{end+1} = ROIname;
-                outVals(1:size(val,1),end+1) = mean(val(:,A==iRoi),2);
-                %sizes(1,end+1) = sum(~isnan(val(1,A==iRoi)));
+                out(iRoi).name = ROIname;
+                out(iRoi).filenames = outimageNames;
+                out(iRoi).means = mean(val(:,A==iRoi),2);
             end
-          end
-
-    end
-    
-    % image names
-    for i = 1:size(outimageNames,1)
-        [p,f,e] = fileparts(outimageNames{i});
-        n1{i} = p;
-        n2{i} = strcat(f,e);
-    end
-    
-    % save as xlsx
-    %out = [ 'imagePath' 'imageName' outRoiNames ; '-' 'size' num2cell(sizes) ; n1' n2'  num2cell(outVals)];
-    out = [ 'imagePath' 'imageName' outRoiNames ; n1' n2'  num2cell(outVals)];
-    [filename, pathname] = uiputfile('*.xlsx', 'Save as ...');
-    if ischar(filename)
-        destFile = fullfile(pathname,filename);
-        xlswrite(destFile,out);
+        end
     end
 end

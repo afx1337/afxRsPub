@@ -15,7 +15,7 @@ function [y,names] = afxRoiExtract(rois,images)
     
     Vi = spm_vol(char(images));
     n = length(Vi);
-    parfor i = 1:n
+    for i = 1:n
         tmp = spm_read_vols(Vi(i));
         X(i,:) = tmp(:);
     end

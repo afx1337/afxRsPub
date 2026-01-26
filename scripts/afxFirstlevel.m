@@ -9,6 +9,7 @@ function projectDir = afxFirstlevel(subjects,denoisingOptions,rois,projectName,a
     if ischar(subjects), load(subjects); end
     if ischar(denoisingOptions), load(denoisingOptions); end
     if ischar(rois), load(rois); end
+    [rois.ind] = deal([]);
     
     % update paths in case data has moved
     subjects = afxUpdatePaths(subjects);
@@ -17,7 +18,7 @@ function projectDir = afxFirstlevel(subjects,denoisingOptions,rois,projectName,a
     % (sampleName is taken from the first subject)
     firstlevelDir = fullfile(subjects(1).sampleName,projectName);
     projectDir = fullfile('results',firstlevelDir);
-    
+
     % calculate firstlevel for all subjects and conditions
     includedSubjects = find(~[subjects.exclude]);
     for iSubject = includedSubjects
@@ -26,7 +27,7 @@ function projectDir = afxFirstlevel(subjects,denoisingOptions,rois,projectName,a
             fprintf('Subject >%s< (%i/%i) condition >%s< ...\n',subjects(iSubject).name,iSubject,length(subjects),subjects(iSubject).conditions(iCond).name);
             % add empty func2-fieled to ensure backwards compatibility
             if ~isfield(subjects(iSubject).conditions(iCond),'func2'), subjects(iSubject).conditions(iCond).func2 = []; end
-            afxConn(...
+            rois = afxConn(...
                 struct('func',subjects(iSubject).conditions(iCond).func,'func2',subjects(iSubject).conditions(iCond).func2),...
                 subjects(iSubject).masks,...
                 subjects(iSubject).conditions(iCond).rp,...

@@ -4,7 +4,8 @@ function y = afxFilter(rt,filter,x)
     if ~isempty(filter)
         f = 1/rt;
         [b,a] = butter(2,2*filter/f);
-        y = filtfilt(b, a, x);
+        y = single(afxBlockApply(x, @(block) filtfilt(b, a, double(block)), 1000));
+        
     else
         disp('Note: Time series filtering has been skipped ...');
         y = x;

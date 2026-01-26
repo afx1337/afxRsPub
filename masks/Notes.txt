@@ -1,0 +1,9 @@
+brainmask.niis - Brain mask constructed from SPM TPMs
+devMaskHCP.nii - Brain mask for HCP data
+gmmask_20.nii - SPM TPM thresholded at 0.2
+gmmask_20_ext.nii - SPM TPM GM combined with subcortical TPM and thalamic TPM and brainstem mask (Harvard-Oxford) thresholded at 0.2
+tpm_gm_mod1.nii - SPM TPM GM combined with subcortical TPM and thalamic TPM (see rois/atlas)
+tpm_gm_mod2.nii - SPM TPM GM combined with subcortical TPM and thalamic TPM and brainstem mask from Harvard-Oxford-Subcortical (see rois/atlas)
+wc1.nii - SPM TPM GM
+wc2.nii - SPM TPM WM
+wc3.nii - SPM TPM CSF

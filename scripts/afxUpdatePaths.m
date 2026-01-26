@@ -8,12 +8,12 @@ function subjects = afxUpdatePaths(subjects)
     
     fprintf('Preprocessed data has moved. Updating all paths ... ');
     for iSub = 1:length(subjects)
-        baseDirSub = fullfile(baseDir,subjects(iSub).dir);
+        baseDirSub = fullfile(baseDir,afxFixPath(subjects(iSub).dir));
         % update t1
         subjects(iSub).t1 = afxUpdate(subjects(iSub).t1,'struc',baseDirSub);
         % update masks
         clear tmp;
-        [p,~,~] = fileparts(subjects(iSub).masks(1,:));
+        [p,~,~] = fileparts(afxFixPath(subjects(iSub).masks(1,:)));
         [~,p,~] = fileparts(p);
         if strcmp(p,'masks')
             for iMask = 1:size(subjects(iSub).masks,1)
@@ -48,6 +48,13 @@ function subjects = afxUpdatePaths(subjects)
 end
 
 function fileNew = afxUpdate(fileOld,subfolder,baseDir)
-        [~,f,ext] = fileparts(fileOld);
-        fileNew = fullfile(baseDir,subfolder,[f ext]);
+    fileOld = afxFixPath(fileOld);
+    fileOld = afxFixPath(fileOld);
+	[~,f,ext] = fileparts(fileOld);
+    fileNew = fullfile(baseDir,subfolder,[f ext]);
+end
+
+function pth = afxFixPath(pth)
+	pth = strrep(pth,'\',filesep);
+    pth = strrep(pth,'/',filesep);
 end

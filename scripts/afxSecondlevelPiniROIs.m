@@ -57,7 +57,7 @@ fprintf('afxSecondlevelPiniROIs ...\n');
         end
 
         % PCA
-        [pCoeff] = pca(mergedMatrix);
+        [pCoeff] = pca(double(mergedMatrix));
 
         % project back PC1
         pc1Coeff = pCoeff(:,1);

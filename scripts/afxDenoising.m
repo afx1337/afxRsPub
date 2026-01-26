@@ -16,31 +16,38 @@ function [y,excl,rmsFd] = afxDenoising(y,subjectMasks,brainMask,rpFile,options)
     
     % calculate tissue signal regressors
     ts = nan(size(y,1),0);
+    nanMask = any(isnan(y),1);
     for i = 1:length(options.regressTs)
         % generate mask
         combinedProb = subjectMasks(:,1:3)*options.regressTs(i).tpm';
         tissueMask = combinedProb > options.regressTs(i).thresh;
-        tissueMask(any(isnan(y),1)) = false; % to be safe from voxels outside the brain in the HCP data set
+        tissueMask(nanMask) = false; % to be safe from voxels outside the brain in the HCP data set
+        if nnz(tissueMask) == 0
+            error('Empty tissue mask for tissue signal regression/residualization.')
+        end
+        
         % get tissue nuisance regressors
         if options.regressTs(i).pca > 0
             % compute principle component analysis
-            [~, tmp] = pca(y(:,tissueMask),'NumComponents',options.regressTs(i).pca);
+            tmp = afxFastPCA(y(:,tissueMask), options.regressTs(i).pca);
         else
-            % compute weighted mean
-            tmp = mean(y(:,tissueMask).*repmat(combinedProb(tissueMask),1,size(y,1))',2);
+            % compute weighted mean (in a memory efficient way)
+            tmp = weightedMeanBlockwise(y, combinedProb, tissueMask, 1000);
         end
         ts = [ts tmp];
     end
-
+    clear combinedProb tissueMask nanMask;
+   
     % generate counfound matrix, mean center and norm confounds
     confounds = [ motion ts ];
-    confounds = confounds-repmat(mean(confounds),size(confounds,1),1);
-    confounds = confounds./repmat(std(confounds),size(confounds,1),1);
+    confounds = confounds - mean(confounds,1);
+    confounds = confounds ./ std(confounds,0,1);
     % confound removal via GLM/multiple regression: y = X*beta + epsilon
+    % optimized for avoiding RAM peaks
     if size(confounds,2) > 1
-        X = [confounds ones(size(confounds,1),1)];
-        beta = X\y(:,brainMask);
-        y(:,brainMask) = y(:,brainMask) - X*beta;
+        X = single([confounds ones(size(confounds,1),1)]);
+        [Q,~] = qr(X,0);     
+        y(:,brainMask) = afxBlockApply(y(:,brainMask), @(Yblock) Yblock - Q * (Q' * Yblock), 1000);
     end
 
     % apply filter
@@ -61,5 +68,29 @@ function [y,excl,rmsFd] = afxDenoising(y,subjectMasks,brainMask,rpFile,options)
     if nargout > 3, rmsFd = sqrt(mean(FD.^2)); end
     
     fprintf(' done\n')
-    fprintf('      > %i of %i scans were discarded due to motion scrubbing\n',nnz(extMov),length(FD));
+    fprintf('      > %i of %i scans were discarded due to motion scrubbing\n',nnz(extMov),numel(FD));
+end
+
+
+function tmp = weightedMeanBlockwise(y, weights, mask, blockSize)
+    % Maskierte Indizes
+    idxMask = find(mask);
+    nMask   = numel(idxMask);
+
+    % Initialisierung
+    N   = size(y,1);
+    tmp = zeros(N,1,'like',y);
+    wsum = zeros(1,1,'like',weights);
+
+    % Blockweise Akkumulation
+    for k = 1:blockSize:nMask
+        idx = idxMask(k:min(k+blockSize-1, nMask));
+        w   = weights(idx);
+
+        tmp  = tmp + y(:,idx) * w(:);
+        wsum = wsum + sum(w,'native');
+    end
+
+    % Normierung
+    tmp = tmp / wsum;
 end

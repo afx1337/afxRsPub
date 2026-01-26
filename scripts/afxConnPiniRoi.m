@@ -3,7 +3,7 @@ function afxConnPiniRoi(y,brainMask,subjectMasks,rois,XYZmm,denoisingOptions,out
     fprintf('   Calculating within ROI functional connectivity (Pini et al., 2022) ...\n')
     
     % extract time series for all rois
-    [~, ~, yRoiCC] = afxRoiTimeseries(rois,y,subjectMasks,brainMask,XYZmm,denoisingOptions);
+    [~, ~, ~, yRoiCC] = afxRoiTimeseries(rois,y,subjectMasks,brainMask,XYZmm,denoisingOptions);
    
     % create output dir if necassary
     outFname = fullfile(outDir,'meanWithinRoiConn',strcat(subjectName,'.mat'));
