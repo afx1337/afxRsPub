@@ -1,6 +1,6 @@
 function afxNeuroimagingPCA(files,k,outdir)
     % load data
-	[y,~,dim,mat] = afxVolumeRead(files);
+	[y,~,dim,mat] = afxLoadFunc(char(files));
     
     % generate implizit mask and discard all data outside the mask
     mask = mean(abs(y),1) > eps;

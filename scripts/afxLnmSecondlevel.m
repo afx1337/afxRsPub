@@ -1,4 +1,4 @@
-function [allMean,allMeanZ,allT] = afxLnmSecondlevel(firstlevelInfo,groups,deleteFirstlevel)
+function [allMean,allT] = afxLnmSecondlevel(firstlevelInfo,groups,deleteFirstlevel)
     if nargin < 3, deleteFirstlevel = false; end
     if nargin < 2, groups = []; end
     if nargin < 1 || isempty(firstlevelInfo)
@@ -63,13 +63,13 @@ function [allMean,allMeanZ,allT] = afxLnmSecondlevel(firstlevelInfo,groups,delet
     fprintf(fid, 'alpha = 0.001 corresponds to tCrit = %f\n',tCrit);
     fclose(fid);
     
-    % legacy secondlevel code
-    if ~isempty(groups)
-        spm_jobman('initcfg');
-        for i = 1:length(groups)
-            afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_pos_sum_group' num2str(i) '.nii']),tCritBoes);
-            afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_neg_sum_group' num2str(i) '.nii']),-tCritBoes);
-        end
-        afxLnmTTest2(allMean(groups{2}),allMean(groups{1}),.001,fullfile(dirSecondlevel,'mean','ttest_group2_vs_group1.nii'));
-    end
+    % legacy secondlevel code used for comparibility with Boes et al., 2015
+    %if ~isempty(groups)
+    %    spm_jobman('initcfg');
+    %    for i = 1:length(groups)
+    %        afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_pos_sum_group' num2str(i) '.nii']),tCritBoes);
+    %        afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_neg_sum_group' num2str(i) '.nii']),-tCritBoes);
+    %    end
+    %    afxLnmTTest2(allMean(groups{2}),allMean(groups{1}),.001,fullfile(dirSecondlevel,'mean','ttest_group2_vs_group1.nii'));
+    %end
 end

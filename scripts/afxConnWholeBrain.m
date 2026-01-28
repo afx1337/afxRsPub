@@ -18,9 +18,9 @@ function afxConnWholeBrain(y,yRoi,brainMask,rois,dim,mat,outDir,subjectName)
     nRoi = size(yRoi,2);
     roiIdx = 1:blockSize:nRoi;  % start indices of each block    
     for b = 1:length(roiIdx)
-        fprintf('      Processing ROIs %d-%d ... ', idxStart, idxEnd);
         idxStart = roiIdx(b);
         idxEnd   = min(idxStart + blockSize - 1, nRoi);
+        fprintf('      Processing ROIs %d-%d ... ', idxStart, idxEnd);
         idxBlock = idxStart:idxEnd;
 
         % compute fc

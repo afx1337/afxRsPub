@@ -44,6 +44,7 @@ function projectDir = afxFirstlevel(subjects,denoisingOptions,rois,projectName,a
     
     % save project information
     meta = afxMetaData();
+    rois = rmfield(rois,'ind');
     save(fullfile(projectDir,'firstlevel_info.mat'),'subjects','rois','denoisingOptions','projectName','firstlevelDir','analyses','meta');
     
     if any(contains(analyses,'piniroi'))
