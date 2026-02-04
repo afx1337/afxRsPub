@@ -45,6 +45,8 @@ function [y,XYZmm,dim,mat] = afxLoadFunc(func, varargin)
         nFiles = size(func,1);
         for i = 1:nFiles
             fprintf('.');
+            if mod(i,50) < 1 && i < nFiles, fprintf('\n                               '); end
+
             if i > 1, tmp = nifti(func(i,:)); end
 
             if nVolumes > 1
