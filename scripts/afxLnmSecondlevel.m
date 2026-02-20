@@ -19,6 +19,18 @@ function [allMean,allT] = afxLnmSecondlevel(firstlevelInfo,groups,deleteFirstlev
     allT = cell(length(info.rois),1);
     allMean = cell(length(info.rois),1);
     
+    % load underlay for rendering
+    [templateVol,~,templateDim,templateMat] = afxLoadFunc(char(fullfile('templates','MNI152_T1_0.5mm_masked.nii')));
+    templateVol = reshape(templateVol, templateDim);
+    opts.intensityWindow = [0 255];
+
+    % rendering defaults
+    sliceSpec.orientation = 'axial';
+    sliceList = [40 20 0 -30];
+    overlays(1).thr = [tCrit Inf];
+    overlays(1).mode = 'gradient';
+    overlays(1).colormap = 'hot';
+
     % for each ROI
     for iRoi = 1:length(info.rois)
         fil = {};
@@ -36,10 +48,8 @@ function [allMean,allT] = afxLnmSecondlevel(firstlevelInfo,groups,deleteFirstlev
         
         % create sections to allow reviewing individual lesion networks
         if ~exist(fTPng,'file')
-            f = afxPlotSections(fT,[40 20 0 -30],{},[tCrit Inf],[tCrit Inf],1,3);
-            set(f,'Position',[100 100 1500/2 360/2]);
-            print(f,fTPng,'-dpng','-r150');
-            close(f);
+            overlays(1).fname = fT;
+            afxRenderSections(templateVol, templateMat, sliceSpec, sliceList, overlays, opts, fTPng);
         end
         
         allT{iRoi} = fT;
@@ -62,14 +72,4 @@ function [allMean,allT] = afxLnmSecondlevel(firstlevelInfo,groups,deleteFirstlev
     fprintf(fid, 'df = %i\nwith alpha = %f and one-tailed testing, tCrit = %f\n',df,alphaBoes,tCritBoes);
     fprintf(fid, 'alpha = 0.001 corresponds to tCrit = %f\n',tCrit);
     fclose(fid);
-    
-    % legacy secondlevel code used for comparibility with Boes et al., 2015
-    %if ~isempty(groups)
-    %    spm_jobman('initcfg');
-    %    for i = 1:length(groups)
-    %        afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_pos_sum_group' num2str(i) '.nii']),tCritBoes);
-    %        afxLnmSum(allT(groups{i}),fullfile(dirSecondlevel,'ttest',['ttest_neg_sum_group' num2str(i) '.nii']),-tCritBoes);
-    %    end
-    %    afxLnmTTest2(allMean(groups{2}),allMean(groups{1}),.001,fullfile(dirSecondlevel,'mean','ttest_group2_vs_group1.nii'));
-    %end
 end

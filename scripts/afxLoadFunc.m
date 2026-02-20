@@ -35,7 +35,7 @@ function [y,XYZmm,dim,mat] = afxLoadFunc(func, varargin)
 
         %% --- Preallocate y ---
         if nVolumes > 1
-            assert(size(func,1)==1,'4D data only supported for single file');
+            assert(nVolumes~=size(func,1),'4D data in first file does not match number of files');
             y = zeros(nVolumes,nVox,precision);
         else
             y = zeros(size(func,1),nVox,precision);

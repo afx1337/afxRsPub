@@ -35,21 +35,22 @@ function [rois, delInd] = afxCheckRois(rois,subjects)
         end
         
         % perform brain masking (just to be sure)
-        ind = ind & brainMask;
+        ind2 = ind & brainMask;
         
         % check if ROI is empty before gm masking
-        if sum(ind) == 0
+        if sum(ind2) == 0
             fprintf('      > delete empty ROI %s\n',rois(iRoi).name);
             rois(iRoi) = [];
             delInd(iRoi) = true;
         elseif curRoi.gmMask ~= 0
             % perform gray matter masking for each mask
             for iSubject = find(~[subjects.exclude])
+                ind = ind2; % restore roi for each subject
                 switch curRoi.gmMask
                     case 0 % gm no masking
                         ind = ind;
                     case 'split' % median split
-                        ind = ind & subjectMasks{iSubject}(:,1)>median(subjectMasks{iSubject}(ind,1));
+                        ind = ind & subjectMasks{iSubject}(:,1)'>median(subjectMasks{iSubject}(ind,1));
                     otherwise
                         if ischar(curRoi.gmMask)
                             if ~exist(curRoi.gmMask, 'file')
@@ -58,7 +59,7 @@ function [rois, delInd] = afxCheckRois(rois,subjects)
                             gmCache = getResampledData(gmCache, curRoi.gmMask, XYZmm);
                             ind = ind & (gmCache.dat ~= 0);
                         elseif isnumeric(curRoi.gmMask) && curRoi.gmMask > 0 && curRoi.gmMask < 1
-                            ind = ind & subjectMasks{iSubject}(:,1) > curRoi.gmMask;
+                            ind = ind & subjectMasks{iSubject}(:,1)' > curRoi.gmMask;
                         else
                             error('unknown gmMask option: %s', mat2str(curRoi.gmMask));
                         end

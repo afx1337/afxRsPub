@@ -33,7 +33,7 @@ function [rois, lesioned, yRoi, yRoiCC] = afxRoiTimeseries(rois,y,subjectMasks,b
 
         % check if roi is lesioned
         if size(subjectMasks,2) > 3
-            lesioned(iRoi) = nnz(rois(iRoi).ind & subjectMasks(:,4)>=.5) / nnz(rois(iRoi).ind);
+            lesioned(iRoi) = nnz(rois(iRoi).ind & subjectMasks(:,4)'>=.5) / nnz(rois(iRoi).ind);
         end
 
         % perform brain (and implicitly lesion) masking (just to be sure); proceed with copy of ind
@@ -54,7 +54,7 @@ function [rois, lesioned, yRoi, yRoiCC] = afxRoiTimeseries(rois,y,subjectMasks,b
         switch rois(iRoi).gmMask
             case 0 % gm no masking
             case 'split' % median split
-                ind = ind & subjectMasks(:,1) >= median(subjectMasks(ind,1));
+                ind = ind & subjectMasks(:,1)' >= median(subjectMasks(ind,1));
             otherwise
                 if ischar(rois(iRoi).gmMask)
                     if ~exist(rois(iRoi).gmMask, 'file')
@@ -63,7 +63,7 @@ function [rois, lesioned, yRoi, yRoiCC] = afxRoiTimeseries(rois,y,subjectMasks,b
                     gmCache = getResampledData(gmCache, rois(iRoi).gmMask, XYZmm);
                     ind = ind & (gmCache.dat ~= 0);
                 elseif isnumeric(rois(iRoi).gmMask) && rois(iRoi).gmMask > 0 && rois(iRoi).gmMask < 1
-                    ind = ind & subjectMasks(:,1) > rois(iRoi).gmMask;
+                    ind = ind & subjectMasks(:,1)' > rois(iRoi).gmMask;
                 else
                     error('unknown gmMask option: %s', mat2str(rois(iRoi).gmMask));
                 end
