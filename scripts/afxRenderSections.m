@@ -30,8 +30,9 @@ function montageRGB = afxRenderSections(templateVol, templateMat, sliceSpec, sli
 %
 %   overlays (struct array)
 %       Overlay definitions. Each element must contain:
-%           .vol               - overlay volume (same dimensions as templateVol)
-%           .fname             - overlay file name (if vol is empty)
+%           .vol               - overlay volume
+%           .mat               - overlay affine mat
+%           .fname             - overlay file name (if vol/mat is empty)
 %           .thr               - [low high] threshold (outside set to 0)
 %           .mode              - 'solid' | 'outline' | 'outline+solid' | 'gradient'
 %           .color             - [r g b] (0..1) for solid/outline
@@ -138,13 +139,12 @@ for i = 1:n
     % create label string
     if opts.showLabel
         labelStr = sprintf('%s = %d', axStr{info.sliceAxis}, info.mm);
+        % label row
+        [~, w, ~] = size(rgbSlice);
+        labelRow = renderLabelRow(labelStr, w, opts);
     else
-        labelStr = '';
+        labelRow = [];
     end
-
-    % label row
-    [~, w, ~] = size(rgbSlice);
-    labelRow = renderLabelRow(labelStr, w, opts);
 
     % combine
     if strcmp(opts.labelPosition,'bottom')
@@ -157,7 +157,9 @@ end
 montageRGB = concatImages(blocks, opts);
 
 if exist('outFilename','var')
-   imwrite(montageRGB,outFilename);
+    [pth,~,~] = fileparts(outFilename);
+    if ~exist(pth,'dir'), mkdir(pth); end
+    imwrite(montageRGB,outFilename);
 end
 
 end
@@ -427,6 +429,7 @@ end
 if ~(min(overlaySlice(:)) < 0 && max(overlaySlice(:)) > 0)
     bgMask = bgMask | overlaySlice == 0;
 end
+bgMask = bgMask | isnan(overlaySlice); % explicit nan mask
 
 % ---------------------------
 % Clamp & normalize

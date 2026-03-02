@@ -1,13 +1,18 @@
-function afxNeuroimagingPCA(files,k,outdir)
+function afxNeuroimagingPCA(files,k,outdir,maskFile)
     % load data
-	[y,~,dim,mat] = afxLoadFunc(char(files));
+	[y,XYZorig,dim,mat] = afxLoadFunc(char(files));
     
-    % generate implizit mask and discard all data outside the mask
-    mask = mean(abs(y),1) > eps;
+    % explicit/implicit mask
+    if exist('maskFile', 'var')
+        mask = afxVolumeResample(maskFile,XYZorig,0) ~= 0;
+    else
+        mask = mean(abs(y),1) > eps;
+    end
     y = y(:,mask);
     
     % pca
     [U, explained, mu, V, explainedVoxelPC] = afxFastPCA(y, k);
+    varMap = var(y);
     clear y;
     
     % output dir
@@ -30,8 +35,9 @@ function afxNeuroimagingPCA(files,k,outdir)
     % save weights, factors and explained variance
     save(fullfile(outdir,'result.mat'),'U','explained','fac','Ufac');
     
-    % save mean
+    % save mean and variace maps
     afxVolumeWrite(fullfile(outdir,'mu.nii'),afxUnmask(mu,mask),dim,'int16',mat,'Mean',true);
+    afxVolumeWrite(fullfile(outdir,'var.nii'),afxUnmask(varMap,mask),dim,'int16',mat,'Variance',true);
 end
 
 function y_full = afxUnmask(y,mask)
